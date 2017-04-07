@@ -230,7 +230,7 @@ sub put {
 # Arguments : session, objecttype, object
 sub del {
 
-	my ( $session, $objecttype, $object ) = @_;
+	my ( $session, $objecttype, $object, $action ) = @_;
 
 	if ( !$session || $session eq q{} ) {
 		Carp::confess 'Error : Session should not be null';
@@ -246,16 +246,16 @@ sub del {
 	}
 
 	my $url = "$scheme://$session->{ns}/nitro/v1/config/$objecttype";
-	if ( ref($object) eq 'HASH' ) {
+	$url = $url . q{/} . uri_escape( uri_escape($object) );
+
+	if ( ref($action) eq 'HASH' ) {
 		$url = $url . '?args=';
-		while ( ( my $key, my $value ) = each %{$object} ) {
+		while ( ( my $key, my $value ) = each %{$action} ) {
 			$url = $url . $key . q{:} . uri_escape( uri_escape($value) ) . q{,};
 		}
 		$url =~ s/,$//sm;
 	}
-	else {
-		$url = $url . q{/} . uri_escape( uri_escape($object) );
-	}
+
 	my $contenttype = 'application/vnd.com.citrix.netscaler.' . $objecttype . '+json';
 
 	my $nitro_useragent = LWP::UserAgent->new;
