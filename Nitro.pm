@@ -10,9 +10,19 @@ our $VERSION = '1.04';
 
 my $scheme = undef;
 
+sub new {
+	my ($class) = @_;
+	my $self = {
+		name    => 'Nitro',
+		version => '2.0'
+	};
+	bless $self, $class;
+	return $self;
+}
+
 sub login {
 
-	my ( $ipaddress, $username, $password, $is_ssl ) = @_;
+	my ( $self, $ipaddress, $username, $password, $is_ssl ) = @_;
 
 	if ( !$ipaddress || $ipaddress eq q{} ) {
 		Carp::confess 'Error : IP Address should not be null';
@@ -73,7 +83,7 @@ sub login {
 # Arguments : session, objecttype, object, operation
 sub post {
 
-	my ( $session, $objecttype, $object, $operation ) = @_;
+	my ( $self, $session, $objecttype, $object, $operation ) = @_;
 
 	if ( !$session || $session eq q{} ) {
 		Carp::confess 'Error : Session should not be null';
@@ -119,7 +129,7 @@ sub post {
 # Arguments : session, objecttype, objectname, options
 sub get {
 
-	my ( $session, $objecttype, $objectname, $options ) = @_;
+	my ( $self, $session, $objecttype, $objectname, $options ) = @_;
 
 	if ( !$session || $session eq q{} ) {
 		Carp::confess 'Error : Session should not be null';
@@ -155,7 +165,7 @@ sub get {
 # Arguments : session, objecttype, objectname
 sub get_stats {
 
-	my ( $session, $objecttype, $objectname ) = @_;
+	my ( $self, $session, $objecttype, $objectname ) = @_;
 
 	if ( !$session || $session eq q{} ) {
 		Carp::confess 'Error : Session should not be null';
@@ -187,7 +197,7 @@ sub get_stats {
 # PUT method : Used to update the already existing configuration
 # Arguments : session, objecttype, object, objectname
 sub put {
-	my ( $session, $objecttype, $object, $objectname ) = @_;
+	my ( $self, $session, $objecttype, $object, $objectname ) = @_;
 
 	if ( !$session || $session eq q{} ) {
 		Carp::confess 'Error : Session should not be null';
@@ -205,7 +215,7 @@ sub put {
 	my $payload = JSON->new->allow_blessed->convert_blessed->encode($object);
 	$payload = '{"' . $objecttype . '" :' . $payload . '}';
 
-	my $url = "$scheme://$session->{ns}/nitro/v1/config/" . $objecttype . q{/} . uri_escape( uri_escape($objectname) );
+	my $url         = "$scheme://$session->{ns}/nitro/v1/config/" . $objecttype . q{/} . uri_escape( uri_escape($objectname) );
 	my $contenttype = 'application/vnd.com.citrix.netscaler.' . $objecttype . '+json';
 
 	my $nitro_useragent = LWP::UserAgent->new;
@@ -230,7 +240,7 @@ sub put {
 # Arguments : session, objecttype, object
 sub del {
 
-	my ( $session, $objecttype, $object, $action ) = @_;
+	my ( $self, $session, $objecttype, $object, $action ) = @_;
 
 	if ( !$session || $session eq q{} ) {
 		Carp::confess 'Error : Session should not be null';
@@ -279,7 +289,7 @@ sub del {
 # Arguments : session
 sub logout {
 
-	my ($session) = @_;
+	my ( $self, $session ) = @_;
 
 	if ( !$session || $session eq q{} ) {
 		Carp::confess 'Error : Session should not be null';
